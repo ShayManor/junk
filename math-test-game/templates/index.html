@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Adaptive Math Quiz Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .score, .grade {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .problem {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .message {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 18px;
+            color: green;
+        }
+        form {
+            text-align: center;
+        }
+        input[type="text"] {
+            font-size: 18px;
+            padding: 8px;
+            width: 200px;
+            margin-right: 10px;
+        }
+        input[type="submit"] {
+            font-size: 18px;
+            padding: 8px 16px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Adaptive Math Quiz Game</h1>
+        <p class="score">Score: {{ score }}</p>
+        <p class="grade">Grade: {{ grade }}</p>
+        <p class="problem">Solve: {{ problem }}</p>
+        {% if message %}
+            <p class="message">{{ message }}</p>
+        {% endif %}
+        <form action="/answer" method="post">
+            <input type="text" name="user_answer" placeholder="Your answer" autofocus required>
+            <!-- Hidden fields to carry state -->
+            <input type="hidden" name="score" value="{{ score }}">
+            <input type="hidden" name="difficulty" value="{{ difficulty }}">
+            <input type="hidden" name="correct_answer" value="{{ correct_answer }}">
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</body>
+</html>

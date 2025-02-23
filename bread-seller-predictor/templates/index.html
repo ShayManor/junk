@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bread Demand Predictor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #ffebcd;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        header img {
+            height: 50px;
+            vertical-align: middle;
+        }
+        header h1 {
+            display: inline;
+            margin-left: 15px;
+            color: #d2691e;
+            font-size: 24px;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            max-width: 600px;
+            width: 100%;
+        }
+        .upload-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .upload-container h2 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+        }
+        .file-input {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .file-input input[type="file"] {
+            display: none;
+        }
+        .file-input label {
+            background-color: #d2691e;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .file-input label:hover {
+            background-color: #b2510e;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff7f50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover {
+            background-color: #e67348;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border-left: 5px solid #d2691e;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            display: none;
+        }
+        .result.success {
+            border-color: #28a745;
+        }
+        .result.error {
+            border-color: #dc3545;
+        }
+        .result p {
+            margin: 0;
+            color: #333;
+            font-size: 18px;
+        }
+        footer {
+            background-color: #ffebcd;
+            width: 100%;
+            text-align: center;
+            padding: 15px 0;
+            color: #555;
+            font-size: 14px;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        }
+        @media (max-width: 600px) {
+            .upload-container {
+                padding: 20px;
+            }
+            .submit-btn {
+                font-size: 14px;
+            }
+            .result p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://i.imgur.com/5J8ZQ5h.png" alt="Bread Logo">
+        <h1>Bread Demand Predictor</h1>
+    </header>
+    <main>
+        <div class="upload-container">
+            <h2>Upload Your Sales CSV</h2>
+            <form id="uploadForm">
+                <div class="file-input">
+                    <input type="file" id="file" name="file" accept=".csv" required>
+                    <label for="file">Choose CSV File</label>
+                </div>
+                <button type="submit" class="submit-btn">Get Prediction</button>
+            </form>
+            <div class="result" id="result">
+                <p id="resultText"></p>
+            </div>
+        </div>
+    </main>
+    <footer>
+        &copy; 2024 Bread Demand Predictor. All rights reserved.
+    </footer>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const fileInput = document.getElementById('file');
+            if (fileInput.files.length === 0) {
+                showResult('Please select a CSV file to upload.', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                showResult('Processing...', 'success');
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showResult(`Predicted bread to produce tomorrow: <strong>${data.prediction}</strong>`, 'success');
+                } else {
+                    showResult(`Error: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResult('An unexpected error occurred.', 'error');
+            }
+        });
+
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            const resultText = document.getElementById('resultText');
+            resultText.innerHTML = message;
+            resultDiv.className = 'result ' + type;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
